@@ -6,7 +6,6 @@ import {
   closestCorners,
   DndContext,
   DragOverlay,
-  getFirstCollision,
   KeyboardSensor,
   PointerSensor,
   pointerWithin,
@@ -129,7 +128,7 @@ export default function App() {
   const searchRef = useRef(null)
   const suppressClickUntil = useRef(0)
 
-  // Configure high-fidelity sensors
+  // Configure high-fidelity sensors (desktop mouse + mobile touch)
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -138,8 +137,8 @@ export default function App() {
     }),
     useSensor(TouchSensor, {
       activationConstraint: {
-        delay: 150,
-        tolerance: 5,
+        delay: 200,
+        tolerance: 6,
       },
     }),
     useSensor(KeyboardSensor, {
@@ -193,7 +192,7 @@ export default function App() {
     }
   }
 
-  // Custom collision detection: checks pointer within first, falls back to closest corners
+  // Custom collision detection
   const customCollisionDetection = (args) => {
     const pointerCollisions = pointerWithin(args)
     if (pointerCollisions.length > 0) {
@@ -229,7 +228,6 @@ export default function App() {
     if (lanes.some((l) => l.id === overId)) {
       targetLane = overId
     } else {
-      // overId is a quest card
       const targetQuest = curriculum.find((q) => q.id === overId)
       if (targetQuest) {
         targetLane = normalize(statuses[targetQuest.id])
@@ -390,7 +388,7 @@ export default function App() {
         transition={{ delay: 0.16 }}
       >
         <div className="mastery-line">
-          <span>Mastery progress</span>
+          <span>Mastery</span>
           <i>
             <b style={{ width: `${pct}%` }} />
           </i>
@@ -399,7 +397,7 @@ export default function App() {
           </em>
         </div>
 
-        <div className="phase-chips">
+        <div className="phase-chips" role="tablist">
           <button
             className={phase === 'all' ? 'active' : ''}
             onClick={() => setPhase('all')}
@@ -432,17 +430,23 @@ export default function App() {
         </label>
       </motion.section>
 
-      {/* Mobile Lane Selector */}
-      <div className="mobile-tabs">
-        {lanes.map((l) => (
-          <button
-            key={l.id}
-            className={mobileLane === l.id ? 'active' : ''}
-            onClick={() => setMobileLane(l.id)}
-          >
-            {l.label}
-          </button>
-        ))}
+      {/* Mobile Lane Selector Tabs */}
+      <div className="mobile-tabs" role="tablist">
+        {lanes.map((l) => {
+          const count = visible.filter((q) => normalize(statuses[q.id]) === l.id).length
+          return (
+            <button
+              key={l.id}
+              role="tab"
+              aria-selected={mobileLane === l.id}
+              className={mobileLane === l.id ? 'active' : ''}
+              onClick={() => setMobileLane(l.id)}
+            >
+              <span>{l.label}</span>
+              <em>{count}</em>
+            </button>
+          )
+        })}
       </div>
 
       {/* Kanban Board with Drag and Drop */}

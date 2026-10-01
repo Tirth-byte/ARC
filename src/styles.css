@@ -18,10 +18,17 @@
   --shadow-card: 0 8px 24px rgba(45, 95, 135, 0.08);
   --shadow-hover: 0 12px 30px rgba(38, 92, 134, 0.15);
   --shadow-drag: 0 22px 50px rgba(22, 65, 105, 0.24);
+
+  /* iOS Safe Area Insets */
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+  --sar: env(safe-area-inset-right, 0px);
 }
 
 * {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html, body, #root {
@@ -29,6 +36,7 @@ html, body, #root {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  background: #83c5f7;
 }
 
 button, input, textarea {
@@ -44,7 +52,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 /* Base Sky Background Layout */
 .sky-app {
   height: 100dvh;
-  min-height: 660px;
+  min-height: 640px;
   padding: 2.2vh 2.8vw 2vh;
   display: grid;
   grid-template-rows: 58px minmax(130px, 17.5vh) 46px minmax(0, 1fr);
@@ -570,6 +578,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
   overflow-x: hidden;
   scrollbar-width: thin;
   scrollbar-color: rgba(65, 113, 150, 0.25) transparent;
+  -webkit-overflow-scrolling: touch;
 }
 
 .cards::-webkit-scrollbar {
@@ -740,7 +749,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 .master-confirm {
   position: fixed;
   z-index: 80;
-  bottom: 24px;
+  bottom: max(20px, calc(var(--sab) + 12px));
   left: 50%;
   transform: translateX(-50%);
   border-radius: 17px;
@@ -751,6 +760,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
   background: rgba(248, 253, 255, 0.92);
   border: 1px solid rgba(255, 255, 255, 0.95);
   box-shadow: 0 16px 45px rgba(20, 65, 105, 0.18);
+  max-width: calc(100vw - 24px);
 }
 
 .confirm-icon {
@@ -771,7 +781,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 .confirm-text {
   display: flex;
   flex-direction: column;
-  min-width: 220px;
+  min-width: 200px;
 }
 
 .confirm-text b {
@@ -787,7 +797,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 260px;
+  max-width: 240px;
 }
 
 .confirm-buttons {
@@ -825,7 +835,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 .scrim {
   position: fixed;
   inset: 0;
-  background: rgba(25, 65, 95, 0.18);
+  background: rgba(25, 65, 95, 0.22);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   z-index: 50;
@@ -840,8 +850,9 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
   z-index: 60;
   border-radius: 22px;
   padding: 26px 24px 22px;
-  background: rgba(248, 253, 255, 0.88);
+  background: rgba(248, 253, 255, 0.90);
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   box-shadow: -15px 10px 60px rgba(28, 70, 104, 0.18), inset 0 1px 0 #fff;
   scrollbar-width: thin;
 }
@@ -1049,7 +1060,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 .popover {
   position: absolute;
   z-index: 40;
-  background: rgba(246, 252, 255, 0.92);
+  background: rgba(246, 252, 255, 0.94);
 }
 
 .progress-pop {
@@ -1164,7 +1175,8 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
   width: min(680px, calc(100vw - 28px));
   max-height: calc(100vh - 40px);
   overflow-y: auto;
-  background: rgba(246, 252, 255, 0.90);
+  -webkit-overflow-scrolling: touch;
+  background: rgba(246, 252, 255, 0.92);
   border-radius: 23px;
   padding: 26px 28px;
   box-shadow: 0 20px 60px rgba(20, 60, 95, 0.22);
@@ -1242,7 +1254,11 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
   display: none;
 }
 
-/* Responsive Styles */
+/* ==========================================================================
+   Responsive Styles & iPhone 17 / iOS Screen Optimizations
+   ========================================================================== */
+
+/* Tablet & Smaller Desktops */
 @media (max-width: 1100px) {
   .sky-app {
     padding: 16px;
@@ -1266,6 +1282,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
   }
   .phase-chips {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
   .phase-chips button {
     min-width: 34px;
@@ -1280,160 +1297,347 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
   }
 }
 
-@media (max-width: 700px) {
+/* iPhone 17 / iPhone 17 Pro / Mobile Portrait (<= 768px) */
+@media (max-width: 768px) {
   html, body, #root {
-    overflow: auto;
+    overflow: hidden;
+    height: 100dvh;
   }
+
   .sky-app {
     height: 100dvh;
-    min-height: 640px;
-    padding: 10px;
-    grid-template-rows: 52px 145px 78px 38px minmax(0, 1fr);
+    padding: max(10px, var(--sat)) max(12px, var(--sar)) max(8px, var(--sab)) max(12px, var(--sal));
+    display: flex;
+    flex-direction: column;
     gap: 8px;
+    min-height: 0;
   }
+
+  /* 1. Mobile Top Bar */
   .top {
+    height: 48px;
     padding: 0 12px;
-    border-radius: 16px;
+    border-radius: 15px;
+    grid-template-columns: 1fr auto;
+    flex: 0 0 auto;
   }
+
   .identity > b {
     font-size: 17px;
+    letter-spacing: 0.15em;
   }
+
   .identity i, .identity span {
     display: none;
   }
+
   .ring-button {
-    padding: 2px 4px;
+    padding: 2px 6px;
+    gap: 6px;
   }
+
   .ring {
-    width: 29px;
-    height: 29px;
+    width: 28px;
+    height: 28px;
   }
+
+  .ring:after {
+    inset: 3.5px;
+  }
+
+  .ring-button b {
+    font-size: 11px;
+  }
+
   .ring-button small {
     display: none;
   }
+
   .icon {
     width: 30px;
+    height: 30px;
+    border-left-width: 1px;
   }
+
+  .icon svg {
+    width: 16px;
+  }
+
   .top-actions {
-    gap: 2px;
+    gap: 4px;
   }
+
+  /* 2. Mobile Hero Card */
   .today {
-    padding: 12px;
+    padding: 11px 13px;
     border-radius: 16px;
     grid-template-columns: 1fr;
+    flex: 0 0 auto;
   }
+
   .greeting {
     display: none;
   }
+
   .today-card {
     min-height: 0;
-    height: 100%;
-    padding: 12px 14px;
-    align-items: flex-start;
+    padding: 10px 12px;
+    border-radius: 14px;
+    gap: 10px;
+    align-items: center;
   }
+
   .today-card h2 {
-    font-size: 18px;
-    margin-top: 5px;
+    font-size: 16px;
+    margin: 3px 0 2px;
   }
+
   .today-big-q {
     display: none;
   }
+
   .today-card small {
-    font-size: 8px;
-    max-width: 190px;
+    font-size: 8.5px;
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px;
   }
+
   .today-actions {
-    align-self: center;
+    flex-direction: row;
+    gap: 6px;
   }
+
   .primary {
     padding: 8px 14px;
     font-size: 11px;
+    border-radius: 11px;
+    gap: 5px;
   }
-  .utility {
-    grid-template-columns: 1fr;
-    gap: 6px;
-  }
-  .mastery-line {
-    grid-column: auto;
-  }
-  .phase-chips {
+
+  .text-button {
     display: none;
   }
-  .search {
-    height: 36px;
+
+  /* 3. Mobile Utility Bar */
+  .utility {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 0 0 auto;
   }
+
+  .mastery-line {
+    display: none;
+  }
+
+  .phase-chips {
+    display: flex;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .phase-chips::-webkit-scrollbar {
+    display: none;
+  }
+
+  .phase-chips button {
+    height: 28px;
+    min-width: 28px;
+    padding: 0 8px;
+    font-size: 9px;
+    border-radius: 8px;
+    flex: 0 0 auto;
+  }
+
+  .search {
+    height: 34px;
+    border-radius: 12px;
+    padding: 0 10px;
+  }
+
+  .search svg {
+    width: 14px;
+  }
+
+  .search input {
+    font-size: 11px;
+  }
+
+  .search kbd {
+    display: none;
+  }
+
+  /* 4. Mobile Lane Selector Tabs */
   .mobile-tabs {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 4px;
+    gap: 5px;
     z-index: 3;
+    flex: 0 0 auto;
   }
+
   .mobile-tabs button {
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    background: rgba(255, 255, 255, 0.48);
-    font-size: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.65);
+    background: rgba(255, 255, 255, 0.52);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    font-size: 9px;
     font-weight: 600;
-    border-radius: 9px;
+    border-radius: 10px;
     padding: 6px 2px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    transition: all 0.15s;
+    color: #48637c;
   }
+
+  .mobile-tabs button em {
+    font-style: normal;
+    font-size: 8px;
+    background: rgba(255, 255, 255, 0.65);
+    padding: 1px 4px;
+    border-radius: 99px;
+  }
+
   .mobile-tabs button.active {
-    background: rgba(255, 255, 255, 0.94);
-    color: #147bdc;
+    background: linear-gradient(180deg, #4daaff, #278df5);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 4px 12px rgba(18, 115, 213, 0.22);
   }
+
+  .mobile-tabs button.active em {
+    background: rgba(255, 255, 255, 0.25);
+    color: #fff;
+  }
+
+  /* 5. Mobile Kanban Lane */
   .board {
     display: block;
+    flex: 1 1 auto;
+    min-height: 0;
     overflow: hidden;
   }
+
   .lane {
     display: none;
     height: 100%;
+    border-radius: 16px;
   }
+
   .lane.mobile-active {
     display: block;
+    height: 100%;
   }
+
   .lane-inner {
     padding: 0 8px 8px;
+    height: 100%;
   }
+
+  .lane header {
+    height: 40px;
+  }
+
+  .lane-icon svg {
+    width: 15px;
+  }
+
   .cards {
     padding-top: 6px;
+    gap: 7px;
   }
+
+  .quest-card {
+    padding: 10px 12px;
+    border-radius: 12px;
+  }
+
+  .quest-card h3 {
+    font-size: 12px;
+    margin: 6px 14px 2px 0;
+  }
+
+  .quest-card p {
+    font-size: 9.5px;
+  }
+
+  .quest-card.drag-overlay {
+    width: calc(100vw - 32px);
+  }
+
+  /* 6. Mobile Details Drawer */
   .detail {
-    inset: 6px;
-    width: auto;
-    border-radius: 18px;
-    padding: 22px 18px;
+    inset: 0;
+    width: 100%;
+    height: 100dvh;
+    border-radius: 0;
+    z-index: 100;
+    padding: max(18px, calc(var(--sat) + 8px)) 16px max(24px, calc(var(--sab) + 16px));
+    box-shadow: none;
+    background: rgba(248, 253, 255, 0.96);
   }
+
+  .detail h2 {
+    font-size: 20px;
+    margin: 8px 32px 18px 0;
+  }
+
+  .close {
+    top: max(14px, calc(var(--sat) + 4px));
+    right: 14px;
+  }
+
   .master-confirm {
-    left: 8px;
-    right: 8px;
-    bottom: 8px;
+    left: 10px;
+    right: 10px;
+    bottom: max(12px, calc(var(--sab) + 6px));
     transform: none;
     flex-wrap: wrap;
+    padding: 10px 12px;
   }
+
   .master-confirm .confirm-text {
     min-width: calc(100% - 46px);
   }
+
   .progress-pop {
     position: fixed;
     left: 10px;
     right: 10px;
-    top: 62px;
+    top: max(58px, calc(var(--sat) + 48px));
     width: auto;
+    border-radius: 18px;
+    padding: 16px;
   }
+
   .menu-pop {
     position: fixed;
     right: 10px;
-    top: 62px;
+    top: max(58px, calc(var(--sat) + 48px));
+    border-radius: 14px;
   }
+
+  .graph-sheet {
+    width: calc(100vw - 20px);
+    padding: 20px 16px;
+    border-radius: 20px;
+  }
+
   .analytics-summary {
     grid-template-columns: repeat(2, 1fr);
   }
+
   .graph-phases {
     grid-template-columns: 1fr;
-  }
-  .quest-card.drag-overlay {
-    width: calc(100vw - 32px);
   }
 }
 
